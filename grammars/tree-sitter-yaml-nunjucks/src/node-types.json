@@ -76,7 +76,7 @@
       "required": false,
       "types": [
         {
-          "type": "nunjucks_keyword",
+          "type": "statement_content",
           "named": true
         }
       ]
@@ -302,16 +302,16 @@
     "named": false
   },
   {
-    "type": "nunjucks_keyword",
-    "named": true
-  },
-  {
     "type": "off",
     "named": false
   },
   {
     "type": "on",
     "named": false
+  },
+  {
+    "type": "statement_content",
+    "named": true
   },
   {
     "type": "true",

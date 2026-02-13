@@ -1,10 +1,12 @@
 ; YAML + Nunjucks + CloudFormation highlighting
 
 ; === Nunjucks ===
-; Keywords (if, for, set, etc.)
-(nunjucks_keyword) @keyword.control
+; Statement content (variable names, conditions, keywords)
+; Note: Tree-sitter limitations prevent splitting keywords from content within a single node
+; So keywords like 'if', 'for' will show same color as their content for now
+(statement_content) @variable
 
-; Expression content
+; Expression delimiters and content
 (nunjucks_expression) @variable
 
 ; Comments
