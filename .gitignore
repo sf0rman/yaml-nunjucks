@@ -6,8 +6,9 @@ lsp/yaml-nunjucks-lsp-*
 /target/
 Cargo.lock
 
-# Zed grammar build workspace (created during extension build)
+# Zed grammar build artifacts (created during extension build)
 /grammars/yaml_nunjucks/
+/grammars/*.wasm
 
 # IDE
 .vscode/
