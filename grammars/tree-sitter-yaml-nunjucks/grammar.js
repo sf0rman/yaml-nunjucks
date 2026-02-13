@@ -15,10 +15,16 @@ module.exports = grammar({
     // Nunjucks statements - capture keywords separately
     nunjucks_statement: $ => seq(
       '{%',
-      optional(/[ \t]+/),
-      optional($.nunjucks_keyword),
-      optional($._statement_rest),
-      optional(/[ \t]+/),
+      /[ \t]*/,
+      choice(
+        // Statement with keyword and content
+        seq($.nunjucks_keyword, /[ \t]+/, $._statement_rest),
+        // Statement with just keyword
+        $.nunjucks_keyword,
+        // Statement with just content (no keyword)
+        $._statement_rest
+      ),
+      /[ \t]*/,
       '%}'
     ),
 
