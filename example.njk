@@ -1,101 +1,50 @@
-# Example YAML + Nunjucks file
-# This demonstrates the syntax highlighting and validation
+# Example YAML + Nunjucks + CloudFormation + OrgFormation
+# Demonstrates syntax highlighting for mixed templates
 
+# Top-level Nunjucks conditional
+{% if deploy_to_production %}
+environment: production
+replicas: 10
+enable_monitoring: true
+{% else %}
+environment: development
+replicas: 1
+enable_monitoring: false
+{% endif %}
+
+# Basic Nunjucks templating
 database:
   host: "{{ db_host }}"
   port: {{ db_port | default(5432) }}
   name: "my_app_{{ environment }}"
-  credentials:
-    username: "{{ db_user }}"
-    password: "{{ db_password }}"
 
-# Conditional configuration
-{% if enable_cache %}
-cache:
-  type: redis
-  host: "{{ redis_host }}"
-  ttl: 3600
-{% endif %}
-
-# Loop through features
+# Nunjucks loops
 features:
   {% for feature in enabled_features %}
   - name: {{ feature.name }}
     enabled: {{ feature.enabled }}
-    config:
-      timeout: {{ feature.timeout | default(30) }}
-      retries: {{ feature.retries | default(3) }}
   {% endfor %}
 
-# Comments work too
-{# This is a Nunjucks comment that won't appear in output #}
+{# This is a Nunjucks comment #}
 
-# Arrays and nested structures
-services:
-  - name: api
-    port: {{ api_port }}
-    replicas: {{ api_replicas }}
-  - name: worker
-    port: {{ worker_port }}
-    replicas: {{ worker_replicas }}
-
-# Complex expressions
-computed_value: "{{ (base_value * multiplier) | round(2) }}"
-timestamp: "{{ now() | date('YYYY-MM-DD HH:mm:ss') }}"
-
-# ========================================
-# CloudFormation Examples
-# ========================================
-
+# CloudFormation + OrgFormation + Nunjucks mixed example
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "{{ stack_description | default('My CloudFormation Stack') }}"
-
-Parameters:
-  EnvironmentName:
-    Type: String
-    Default: {{ environment }}
-    Description: "Environment name (dev, staging, prod)"
-
-  VpcCIDR:
-    Type: String
-    Default: "{{ vpc_cidr }}"
-    Description: "IP range for VPC"
+Description: "{{ stack_description }}"
 
 Resources:
-  # VPC with Nunjucks variable
-  VPC:
-    Type: AWS::EC2::VPC
+  # AWS S3 Bucket with CloudFormation intrinsics and Nunjucks
+  StorageBucket:
+    Type: AWS::S3::Bucket
     Properties:
-      CidrBlock: !Ref VpcCIDR
-      EnableDnsHostnames: true
-      EnableDnsSupport: true
+      BucketName: !Sub "{{ bucket_prefix }}-${AWS::AccountId}"
       Tags:
-        - Key: Name
-          Value: !Sub "${EnvironmentName}-vpc"
         - Key: Environment
           Value: {{ environment }}
+        - Key: Region
+          Value: {{ primary_region }}
 
-  # S3 Bucket with conditional encryption
-  {% if enable_encryption %}
-  StorageBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "{{ bucket_prefix }}-${AWS::AccountId}-${AWS::Region}"
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
-      Tags:
-        - Key: Encrypted
-          Value: "true"
-  {% else %}
-  StorageBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "{{ bucket_prefix }}-${AWS::AccountId}-${AWS::Region}"
-  {% endif %}
-
-  # Lambda Function with GetAtt
+  # Conditional Lambda with Nunjucks
+  {% if enable_lambda %}
   ProcessorFunction:
     Type: AWS::Lambda::Function
     Properties:
@@ -106,14 +55,10 @@ Resources:
       Environment:
         Variables:
           BUCKET_NAME: !Ref StorageBucket
-          TABLE_NAME: {{ dynamodb_table_name }}
-          DEBUG: "{{ debug_mode | default('false') }}"
-      Code:
-        ZipFile: |
-          def handler(event, context):
-              return {'statusCode': 200}
+          DEBUG_MODE: "{{ debug_mode | default('false') }}"
+  {% endif %}
 
-  # IAM Role
+  # AWS IAM Role
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -124,187 +69,9 @@ Resources:
             Principal:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-
-  # Security Group with Join and Select
-  ApplicationSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupName: !Sub "${EnvironmentName}-app-sg"
-      GroupDescription: Security group for application servers
-      VpcId: !Ref VPC
-      SecurityGroupIngress:
-        {% for port in allowed_ports %}
-        - IpProtocol: tcp
-          FromPort: {{ port }}
-          ToPort: {{ port }}
-          CidrIp: 0.0.0.0/0
-          Description: "Allow {{ port }} from anywhere"
-        {% endfor %}
-
-  # Subnet with select and GetAZs
-  PublicSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: "10.0.1.0/24"
-      AvailabilityZone: !Select
-        - 0
-        - !GetAZs
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: !Sub "${EnvironmentName}-public-subnet"
-
-  # Conditional Resource
-  {% if create_alb %}
-  ApplicationLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties:
-      Name: !Sub "${EnvironmentName}-alb"
-      Type: application
-      Scheme: internet-facing
-      SecurityGroups:
-        - !Ref ApplicationSecurityGroup
-      Subnets:
-        - !Ref PublicSubnet
-  {% endif %}
-
-Conditions:
-  IsProduction: !Equals
-    - !Ref EnvironmentName
-    - "prod"
 
 Outputs:
-  VPCId:
-    Description: VPC ID
-    Value: !Ref VPC
+  BucketArn:
+    Value: !GetAtt StorageBucket.Arn
     Export:
-      Name: !Sub "${EnvironmentName}-VPC-ID"
-
-  BucketName:
-    Description: S3 Bucket Name
-    Value: !Ref StorageBucket
-    Export:
-      Name: !Sub "${EnvironmentName}-Bucket"
-
-  LambdaArn:
-    Description: Lambda Function ARN
-    Value: !GetAtt ProcessorFunction.Arn
-
-# ========================================
-# OrgFormation Examples
-# ========================================
-
-OrganizationTemplate:
-  Type: OC::ORG::OrganizationRoot
-  Properties:
-    DefaultOrganizationAccessRoleName: OrganizationAccountAccessRole
-    DefaultOrganizationBinding:
-      IncludeMasterAccount: true
-
-  # OrgFormation Foreach - create accounts dynamically
-  {% for account in accounts %}
-  {{ account.name }}Account:
-    Type: OC::ORG::Account
-    Properties:
-      AccountName: "{{ account.name }}"
-      AccountId: "{{ account.id }}"
-      RootEmail: !Sub "aws+{{ account.name }}@{{ domain }}"
-      Alias: !Sub "{{ account.name }}-{{ environment }}"
-      Tags:
-        Environment: {{ environment }}
-        ManagedBy: "OrgFormation"
-  {% endfor %}
-
-  # OrgFormation Include - external template
-  SharedResources: !Include ./shared-resources.yml
-
-  # OrgFormation Foreach intrinsic function
-  SecurityBaseline:
-    Type: OC::ORG::MasterAccount
-    OrganizationBinding: !Foreach
-      - AccountBinding
-      - !GetOrganizationBinding
-        IncludeMasterAccount: true
-        Account: "*"
-    Template: |
-      AWSTemplateFormatVersion: "2010-09-09"
-      Resources:
-        CloudTrail:
-          Type: AWS::CloudTrail::Trail
-          Properties:
-            TrailName: !Sub "org-trail-${AWS::AccountId}"
-            IsLogging: true
-            IsMultiRegionTrail: true
-            S3BucketName: {{ central_logging_bucket }}
-
-  # Service Control Policy with Nunjucks conditions
-  {% if enforce_region_restrictions %}
-  RegionRestrictionPolicy:
-    Type: OC::ORG::ServiceControlPolicy
-    Properties:
-      PolicyName: RestrictRegions
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Deny
-            Action: "*"
-            Resource: "*"
-            Condition:
-              StringNotEquals:
-                aws:RequestedRegion:
-                  {% for region in allowed_regions %}
-                  - {{ region }}
-                  {% endfor %}
-      OrganizationBinding:
-        IncludeMasterAccount: false
-        Account:
-          {% for account in accounts %}
-          - !Ref {{ account.name }}Account
-          {% endfor %}
-  {% endif %}
-
-  # Stack Set with OrgFormation binding
-  NetworkStackSet:
-    Type: AWS::CloudFormation::StackSet
-    OrganizationBinding: !GetOrganizationBinding
-      Account: "*"
-      Region: {{ primary_region }}
-    Properties:
-      StackSetName: !Sub "{{ stack_prefix }}-network"
-      TemplateBody: |
-        AWSTemplateFormatVersion: "2010-09-09"
-        Resources:
-          VPC:
-            Type: AWS::EC2::VPC
-            Properties:
-              CidrBlock: !Sub "10.${AccountIndex}.0.0/16"
-      Parameters:
-        - ParameterKey: AccountIndex
-          ParameterValue: !GetAtt CurrentAccount.Tags.Index
-
-# Mixed CloudFormation + OrgFormation + Nunjucks
-DynamicResources:
-  {% for env in environments %}
-  {{ env.name }}Stack:
-    Type: AWS::CloudFormation::Stack
-    OrganizationBinding: !GetOrganizationBinding
-      Account: !Ref {{ env.account_name }}Account
-      Region: {{ env.region }}
-    Properties:
-      TemplateURL: !Sub "https://{{ template_bucket }}.s3.amazonaws.com/{{ env.name }}-stack.yml"
-      Parameters:
-        Environment: {{ env.name }}
-        VpcCidr: {{ env.vpc_cidr }}
-        EnableEncryption: !If
-          - IsProduction
-          - "true"
-          - "{{ env.encryption_enabled | default('false') }}"
-      Tags:
-        - Key: ManagedBy
-          Value: OrgFormation
-        - Key: Environment
-          Value: {{ env.name }}
-  {% endfor %}
+      Name: !Sub "{{ stack_prefix }}-bucket-arn"
