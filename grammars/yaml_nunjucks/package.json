@@ -1,0 +1,5 @@
+{
+  "name": "tree-sitter-yaml-nunjucks",
+  "version": "0.1.0",
+  "tree-sitter": [{"scope": "source.yaml.nunjucks", "file-types": ["njk"]}]
+}
