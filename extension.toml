@@ -8,5 +8,5 @@ repository = "https://github.com/sforman/yaml-nunjucks"
 
 [grammars.yaml_nunjucks]
 repository = "file:///Users/sforman/sforman/yaml-nunjucks"
-rev = "0f7bbddd19cff97ef04fdd9b37adad928b2f0fb4"
+rev = "2c3abd06c323d1a2935eac0965b6ab0e7bd08e7f"
 path = "grammars/tree-sitter-yaml-nunjucks"
