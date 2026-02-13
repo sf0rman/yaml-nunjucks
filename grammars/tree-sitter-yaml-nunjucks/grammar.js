@@ -51,11 +51,22 @@ module.exports = grammar({
 
     yaml_value: $ => choice(
       $.yaml_string,
+      prec.dynamic(2, $.yaml_boolean),
+      prec.dynamic(2, $.yaml_number),
       prec(1, $.yaml_mixed),
       $.nunjucks_expression,
       $.cf_intrinsic,
-      /[^\s:\[\]{},"'#!]+/
+      prec.dynamic(0, $.yaml_plain_scalar)
     ),
+
+    yaml_boolean: $ => choice('true', 'false', 'True', 'False', 'TRUE', 'FALSE', 'yes', 'no', 'Yes', 'No', 'YES', 'NO', 'on', 'off', 'On', 'Off', 'ON', 'OFF'),
+
+    yaml_number: $ => token(choice(
+      /[0-9]+\.[0-9]+/,  // float
+      /[0-9]+/            // integer
+    )),
+
+    yaml_plain_scalar: $ => /[^\s:\[\]{},"'#!]+/,
 
     // CloudFormation and OrgFormation intrinsic functions
     cf_tag: $ => token(choice(

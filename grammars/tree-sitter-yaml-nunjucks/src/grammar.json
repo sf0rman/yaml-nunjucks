@@ -317,6 +317,22 @@
           "name": "yaml_string"
         },
         {
+          "type": "PREC_DYNAMIC",
+          "value": 2,
+          "content": {
+            "type": "SYMBOL",
+            "name": "yaml_boolean"
+          }
+        },
+        {
+          "type": "PREC_DYNAMIC",
+          "value": 2,
+          "content": {
+            "type": "SYMBOL",
+            "name": "yaml_number"
+          }
+        },
+        {
           "type": "PREC",
           "value": 1,
           "content": {
@@ -333,10 +349,111 @@
           "name": "cf_intrinsic"
         },
         {
-          "type": "PATTERN",
-          "value": "[^\\s:\\[\\]{},\"'#!]+"
+          "type": "PREC_DYNAMIC",
+          "value": 0,
+          "content": {
+            "type": "SYMBOL",
+            "name": "yaml_plain_scalar"
+          }
         }
       ]
+    },
+    "yaml_boolean": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "true"
+        },
+        {
+          "type": "STRING",
+          "value": "false"
+        },
+        {
+          "type": "STRING",
+          "value": "True"
+        },
+        {
+          "type": "STRING",
+          "value": "False"
+        },
+        {
+          "type": "STRING",
+          "value": "TRUE"
+        },
+        {
+          "type": "STRING",
+          "value": "FALSE"
+        },
+        {
+          "type": "STRING",
+          "value": "yes"
+        },
+        {
+          "type": "STRING",
+          "value": "no"
+        },
+        {
+          "type": "STRING",
+          "value": "Yes"
+        },
+        {
+          "type": "STRING",
+          "value": "No"
+        },
+        {
+          "type": "STRING",
+          "value": "YES"
+        },
+        {
+          "type": "STRING",
+          "value": "NO"
+        },
+        {
+          "type": "STRING",
+          "value": "on"
+        },
+        {
+          "type": "STRING",
+          "value": "off"
+        },
+        {
+          "type": "STRING",
+          "value": "On"
+        },
+        {
+          "type": "STRING",
+          "value": "Off"
+        },
+        {
+          "type": "STRING",
+          "value": "ON"
+        },
+        {
+          "type": "STRING",
+          "value": "OFF"
+        }
+      ]
+    },
+    "yaml_number": {
+      "type": "TOKEN",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "PATTERN",
+            "value": "[0-9]+\\.[0-9]+"
+          },
+          {
+            "type": "PATTERN",
+            "value": "[0-9]+"
+          }
+        ]
+      }
+    },
+    "yaml_plain_scalar": {
+      "type": "PATTERN",
+      "value": "[^\\s:\\[\\]{},\"'#!]+"
     },
     "cf_tag": {
       "type": "TOKEN",
