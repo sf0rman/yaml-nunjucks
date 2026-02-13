@@ -66,7 +66,7 @@ module.exports = grammar({
       /[0-9]+/            // integer
     )),
 
-    yaml_plain_scalar: $ => /[^\s:\[\]{},"'#!]+/,
+    yaml_plain_scalar: $ => /[^\s:\[\]{},"'#!]+|[A-Za-z_][A-Za-z0-9_]*:[A-Za-z0-9_:]+/,
 
     // CloudFormation and OrgFormation intrinsic functions
     cf_tag: $ => token(choice(

@@ -453,7 +453,7 @@
     },
     "yaml_plain_scalar": {
       "type": "PATTERN",
-      "value": "[^\\s:\\[\\]{},\"'#!]+"
+      "value": "[^\\s:\\[\\]{},\"'#!]+|[A-Za-z_][A-Za-z0-9_]*:[A-Za-z0-9_:]+"
     },
     "cf_tag": {
       "type": "TOKEN",

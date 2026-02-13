@@ -160,11 +160,6 @@
     }
   },
   {
-    "type": "yaml_plain_scalar",
-    "named": true,
-    "fields": {}
-  },
-  {
     "type": "yaml_string",
     "named": true,
     "fields": {},
@@ -324,6 +319,10 @@
   },
   {
     "type": "yaml_number",
+    "named": true
+  },
+  {
+    "type": "yaml_plain_scalar",
     "named": true
   },
   {

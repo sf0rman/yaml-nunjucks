@@ -4,9 +4,6 @@
 ; Keywords (if, for, set, etc.)
 (nunjucks_keyword) @keyword.control
 
-; Statement content
-(nunjucks_statement) @tag
-
 ; Expression content
 (nunjucks_expression) @variable
 
