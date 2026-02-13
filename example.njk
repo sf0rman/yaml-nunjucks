@@ -4,7 +4,7 @@
 database:
   host: "{{ db_host }}"
   port: {{ db_port | default(5432) }}
-  name: my_app_{{ environment }}
+  name: "my_app_{{ environment }}"
   credentials:
     username: "{{ db_user }}"
     password: "{{ db_password }}"
