@@ -12,23 +12,19 @@ module.exports = grammar({
 
     blank_line: $ => /[ \t]*\r?\n/,
 
-    // Nunjucks statements - capture keywords separately
-    nunjucks_statement: $ => seq(
+    // Nunjucks statements - match keywords with higher precedence
+    nunjucks_statement: $ => prec.left(seq(
       '{%',
       /[ \t]*/,
       choice(
-        // Statement with keyword and content
-        seq($.nunjucks_keyword, /[ \t]+/, $._statement_rest),
-        // Statement with just keyword
-        $.nunjucks_keyword,
-        // Statement with just content (no keyword)
-        $._statement_rest
+        seq(field('keyword', $.nunjucks_keyword), field('content', $._statement_content)),
+        field('content', $._statement_content)
       ),
       /[ \t]*/,
       '%}'
-    ),
+    )),
 
-    nunjucks_keyword: $ => token(choice(
+    nunjucks_keyword: $ => token(prec(1, choice(
       'if', 'elif', 'else', 'endif',
       'for', 'in', 'endfor',
       'set', 'block', 'endblock',
@@ -36,9 +32,9 @@ module.exports = grammar({
       'call', 'endcall',
       'filter', 'endfilter',
       'extends', 'include', 'import', 'from'
-    )),
+    ))),
 
-    _statement_rest: $ => /([^%]|%[^}])*/,
+    _statement_content: $ => /[ \t]*([^%]|%[^}])*/,
 
     // Nunjucks expressions - keep simple for now
     nunjucks_expression: $ => seq('{{', $._expr_content, '}}'),
