@@ -398,6 +398,18 @@
           {
             "type": "STRING",
             "value": "!Or"
+          },
+          {
+            "type": "STRING",
+            "value": "!GetOrganizationBinding"
+          },
+          {
+            "type": "STRING",
+            "value": "!Include"
+          },
+          {
+            "type": "STRING",
+            "value": "!Foreach"
           }
         ]
       }
@@ -509,8 +521,17 @@
                   "value": "[ \\t]+"
                 },
                 {
-                  "type": "SYMBOL",
-                  "name": "yaml_value"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "yaml_pair"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "yaml_value"
+                    }
+                  ]
                 }
               ]
             },

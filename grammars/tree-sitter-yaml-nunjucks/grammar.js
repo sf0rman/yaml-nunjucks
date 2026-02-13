@@ -57,11 +57,14 @@ module.exports = grammar({
       /[^\s\[\]{},"'#!]+/
     ),
 
-    // CloudFormation intrinsic functions
+    // CloudFormation and OrgFormation intrinsic functions
     cf_tag: $ => token(choice(
+      // CloudFormation intrinsics
       '!Ref', '!Sub', '!GetAtt', '!Join', '!Select', '!Split',
       '!FindInMap', '!Base64', '!GetAZs', '!ImportValue',
-      '!If', '!Equals', '!Not', '!And', '!Or'
+      '!If', '!Equals', '!Not', '!And', '!Or',
+      // OrgFormation specific
+      '!GetOrganizationBinding', '!Include', '!Foreach'
     )),
 
     cf_intrinsic: $ => prec(2, seq(
@@ -79,7 +82,7 @@ module.exports = grammar({
       seq(/[^\s\[\]{},"'#\n]+/, repeat1(choice($.nunjucks_expression, /[^\s\[\]{},"'#\n]+/)))
     ),
 
-    yaml_list_item: $ => seq('-', optional(seq(/[ \t]+/, $.yaml_value))),
+    yaml_list_item: $ => seq('-', optional(seq(/[ \t]+/, choice($.yaml_pair, $.yaml_value)))),
 
     yaml_string: $ => choice(
       seq('"', repeat(choice($.nunjucks_expression, /[^"\n\\]+/, /\\./)), '"'),

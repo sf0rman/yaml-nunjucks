@@ -1,9 +1,9 @@
 ; YAML + Nunjucks + CloudFormation highlighting
-; Color scheme matches Go-lang style
+; Color scheme matches Go-lang and YAML style
 
 ; === Nunjucks ===
 ; Keywords (if, for, set, etc.) - blue like Go keywords
-(nunjucks_keyword) @keyword.control
+(nunjucks_keyword) @keyword
 
 ; Variables/identifiers in expressions {{ }} - white/light like Go identifiers
 (nunjucks_expression) @variable
@@ -11,23 +11,23 @@
 ; Comments - gray
 (nunjucks_comment) @comment
 
-; === CloudFormation ===
-; Intrinsic function tags (!Ref, !Sub, etc.) - function style
-(cf_tag) @function.builtin
-(cf_intrinsic (cf_tag) @function.builtin)
+; === CloudFormation & OrgFormation ===
+; Intrinsic function tags (!Ref, !Sub, etc.) - green like YAML special values
+(cf_tag) @type
+(cf_intrinsic (cf_tag) @type)
 
 ; === YAML Structure ===
-; Keys - neutral/light (like Go struct fields)
-(yaml_pair (yaml_key) @variable.member)
+; Keys - light/neutral (like struct fields)
+(yaml_pair (yaml_key) @property)
 
 ; Quoted strings - orange/brown like Go strings
 (yaml_string) @string
 
-; Plain scalar values - keep as strings for consistency
-(yaml_value) @string
+; Plain scalar values (unquoted) - lighter/neutral
+(yaml_value) @variable.member
 
-; Mixed content (text + templates)
-(yaml_mixed) @string
+; Mixed content (text + templates) - treat as values
+(yaml_mixed) @variable.member
 
 ; YAML comments - gray
 (comment) @comment

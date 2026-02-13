@@ -110,6 +110,10 @@
       "required": false,
       "types": [
         {
+          "type": "yaml_pair",
+          "named": true
+        },
+        {
           "type": "yaml_value",
           "named": true
         }
