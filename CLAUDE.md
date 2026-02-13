@@ -60,11 +60,14 @@ npx tree-sitter parse ../../example.njk
 
 - `languages/yaml-nunjucks/highlights.scm`: Syntax highlighting queries
   - Color scheme based on Go-lang and YAML conventions
-  - Nunjucks keywords: blue (@keyword)
+  - Nunjucks keywords: blue (@keyword.control)
   - Variables/expressions: light (@variable)
-  - CF intrinsic functions: green (@type)
+  - CF intrinsic functions: green (@type for !Ref, !Sub, !GetAtt, etc.)
   - Strings: orange/brown (@string)
+  - Booleans: true/false, yes/no, on/off (@boolean)
+  - Numbers: integers and floats (@number)
   - Comments: gray (@comment)
+  - Uses query predicates (#match?) to identify booleans and numbers within plain scalar nodes
 
 ### Extension Metadata
 - `extension.toml`: Zed extension manifest
