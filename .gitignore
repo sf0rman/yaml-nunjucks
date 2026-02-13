@@ -3,7 +3,7 @@ lsp/yaml-nunjucks-lsp
 lsp/yaml-nunjucks-lsp-*
 
 # Rust build artifacts
-/target/
+target
 Cargo.lock
 
 # Zed grammar build artifacts (created during extension build)

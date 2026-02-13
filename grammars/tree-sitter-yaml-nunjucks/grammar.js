@@ -1,7 +1,6 @@
 module.exports = grammar({
   name: 'yaml_nunjucks',
   extras: $ => [],
-
   rules: {
     document: $ => repeat($._line),
 
@@ -12,7 +11,7 @@ module.exports = grammar({
 
     blank_line: $ => /[ \t]*\r?\n/,
 
-    // Nunjucks statements - capture keywords separately
+    // Nunjucks statements
     nunjucks_statement: $ => seq(
       '{%',
       optional(/[ \t]+/),
