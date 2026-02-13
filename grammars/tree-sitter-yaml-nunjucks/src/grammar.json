@@ -75,14 +75,150 @@
           "value": "{%"
         },
         {
-          "type": "PATTERN",
-          "value": "([^%]|%[^}])*"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "[ \\t]+"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "nunjucks_keyword"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_statement_rest"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "[ \\t]+"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "STRING",
           "value": "%}"
         }
       ]
+    },
+    "nunjucks_keyword": {
+      "type": "TOKEN",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "if"
+          },
+          {
+            "type": "STRING",
+            "value": "elif"
+          },
+          {
+            "type": "STRING",
+            "value": "else"
+          },
+          {
+            "type": "STRING",
+            "value": "endif"
+          },
+          {
+            "type": "STRING",
+            "value": "for"
+          },
+          {
+            "type": "STRING",
+            "value": "in"
+          },
+          {
+            "type": "STRING",
+            "value": "endfor"
+          },
+          {
+            "type": "STRING",
+            "value": "set"
+          },
+          {
+            "type": "STRING",
+            "value": "block"
+          },
+          {
+            "type": "STRING",
+            "value": "endblock"
+          },
+          {
+            "type": "STRING",
+            "value": "macro"
+          },
+          {
+            "type": "STRING",
+            "value": "endmacro"
+          },
+          {
+            "type": "STRING",
+            "value": "call"
+          },
+          {
+            "type": "STRING",
+            "value": "endcall"
+          },
+          {
+            "type": "STRING",
+            "value": "filter"
+          },
+          {
+            "type": "STRING",
+            "value": "endfilter"
+          },
+          {
+            "type": "STRING",
+            "value": "extends"
+          },
+          {
+            "type": "STRING",
+            "value": "include"
+          },
+          {
+            "type": "STRING",
+            "value": "import"
+          },
+          {
+            "type": "STRING",
+            "value": "from"
+          }
+        ]
+      }
+    },
+    "_statement_rest": {
+      "type": "PATTERN",
+      "value": "([^%]|%[^}])*"
     },
     "nunjucks_expression": {
       "type": "SEQ",
@@ -164,8 +300,12 @@
           "name": "yaml_string"
         },
         {
+          "type": "SYMBOL",
+          "name": "cf_tag"
+        },
+        {
           "type": "PATTERN",
-          "value": "[^\\s:\\[\\]{},\"'#]+"
+          "value": "[^\\s:\\[\\]{},\"'#!]+"
         }
       ]
     },
@@ -185,10 +325,116 @@
           "name": "nunjucks_expression"
         },
         {
+          "type": "SYMBOL",
+          "name": "cf_intrinsic"
+        },
+        {
           "type": "PATTERN",
-          "value": "[^\\s\\[\\]{},\"'#]+"
+          "value": "[^\\s\\[\\]{},\"'#!]+"
         }
       ]
+    },
+    "cf_tag": {
+      "type": "TOKEN",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "!Ref"
+          },
+          {
+            "type": "STRING",
+            "value": "!Sub"
+          },
+          {
+            "type": "STRING",
+            "value": "!GetAtt"
+          },
+          {
+            "type": "STRING",
+            "value": "!Join"
+          },
+          {
+            "type": "STRING",
+            "value": "!Select"
+          },
+          {
+            "type": "STRING",
+            "value": "!Split"
+          },
+          {
+            "type": "STRING",
+            "value": "!FindInMap"
+          },
+          {
+            "type": "STRING",
+            "value": "!Base64"
+          },
+          {
+            "type": "STRING",
+            "value": "!GetAZs"
+          },
+          {
+            "type": "STRING",
+            "value": "!ImportValue"
+          },
+          {
+            "type": "STRING",
+            "value": "!If"
+          },
+          {
+            "type": "STRING",
+            "value": "!Equals"
+          },
+          {
+            "type": "STRING",
+            "value": "!Not"
+          },
+          {
+            "type": "STRING",
+            "value": "!And"
+          },
+          {
+            "type": "STRING",
+            "value": "!Or"
+          }
+        ]
+      }
+    },
+    "cf_intrinsic": {
+      "type": "PREC",
+      "value": 2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "cf_tag"
+          },
+          {
+            "type": "PATTERN",
+            "value": "[ \\t]+"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "yaml_string"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "nunjucks_expression"
+              },
+              {
+                "type": "PATTERN",
+                "value": "[^\\s\\[\\]{},\"'#\\n]+"
+              }
+            ]
+          }
+        ]
+      }
     },
     "yaml_mixed": {
       "type": "CHOICE",
