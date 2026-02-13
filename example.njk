@@ -1,0 +1,44 @@
+# Example YAML + Nunjucks file
+# This demonstrates the syntax highlighting and validation
+
+database:
+  host: "{{ db_host }}"
+  port: {{ db_port | default(5432) }}
+  name: my_app_{{ environment }}
+  credentials:
+    username: "{{ db_user }}"
+    password: "{{ db_password }}"
+
+# Conditional configuration
+{% if enable_cache %}
+cache:
+  type: redis
+  host: "{{ redis_host }}"
+  ttl: 3600
+{% endif %}
+
+# Loop through features
+features:
+  {% for feature in enabled_features %}
+  - name: {{ feature.name }}
+    enabled: {{ feature.enabled }}
+    config:
+      timeout: {{ feature.timeout | default(30) }}
+      retries: {{ feature.retries | default(3) }}
+  {% endfor %}
+
+# Comments work too
+{# This is a Nunjucks comment that won't appear in output #}
+
+# Arrays and nested structures
+services:
+  - name: api
+    port: {{ api_port }}
+    replicas: {{ api_replicas }}
+  - name: worker
+    port: {{ worker_port }}
+    replicas: {{ worker_replicas }}
+
+# Complex expressions
+computed_value: "{{ (base_value * multiplier) | round(2) }}"
+timestamp: "{{ now() | date('YYYY-MM-DD HH:mm:ss') }}"

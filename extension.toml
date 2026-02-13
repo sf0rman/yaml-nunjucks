@@ -1,0 +1,12 @@
+id = "yaml-nunjucks"
+name = "YAML Nunjucks"
+version = "0.1.0"
+schema_version = 1
+authors = ["Sebastian Forman <sebastian@forman.no>"]
+description = "YAML with embedded Nunjucks template syntax support for .njk files"
+repository = "https://github.com/sforman/yaml-nunjucks"
+
+[grammars.yaml_nunjucks]
+repository = "file:///Users/sforman/sforman/yaml-nunjucks"
+rev = "HEAD"
+path = "grammars/yaml_nunjucks"

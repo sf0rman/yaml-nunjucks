@@ -1,0 +1,21 @@
+# Go
+lsp/yaml-nunjucks-lsp
+lsp/yaml-nunjucks-lsp-*
+
+# Rust build artifacts
+/target/
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
