@@ -3,10 +3,7 @@ module.exports = grammar({
   extras: $ => [],
   rules: {
     document: $ => repeat($._line),
-    _line: $ => choice(
-      seq(optional(/[ \t]+/), choice($.nunjucks_statement, $.nunjucks_comment, $.yaml_pair, $.yaml_list_item, $.comment), /\r?\n/),
-      $.blank_line
-    ),
+    _line: $ => choice(seq(optional(/[ \t]+/), choice($.nunjucks_statement, $.nunjucks_comment, $.yaml_pair, $.yaml_list_item, $.comment), /\r?\n/), $.blank_line),
     blank_line: $ => /[ \t]*\r?\n/,
     nunjucks_statement: $ => seq('{%', /([^%]|%[^}])*/, '%}'),
     nunjucks_expression: $ => seq('{{', $._expr_content, '}}'),
@@ -15,15 +12,9 @@ module.exports = grammar({
     yaml_pair: $ => seq($.yaml_key, ':', optional(seq(/[ \t]+/, $.yaml_value))),
     yaml_key: $ => choice($.yaml_string, /[^\s:\[\]{},"'#]+/),
     yaml_value: $ => choice($.yaml_string, $.yaml_mixed, $.nunjucks_expression, /[^\s\[\]{},"'#]+/),
-    yaml_mixed: $ => choice(
-      seq($.nunjucks_expression, repeat1(choice($.nunjucks_expression, /[^\s\[\]{},"'#\n]+/))),
-      seq(/[^\s\[\]{},"'#\n]+/, repeat1(choice($.nunjucks_expression, /[^\s\[\]{},"'#\n]+/)))
-    ),
+    yaml_mixed: $ => choice(seq($.nunjucks_expression, repeat1(choice($.nunjucks_expression, /[^\s\[\]{},"'#\n]+/))), seq(/[^\s\[\]{},"'#\n]+/, repeat1(choice($.nunjucks_expression, /[^\s\[\]{},"'#\n]+/)))),
     yaml_list_item: $ => seq('-', optional(seq(/[ \t]+/, $.yaml_value))),
-    yaml_string: $ => choice(
-      seq('"', repeat(choice($.nunjucks_expression, /[^"\n\\]+/, /\\./)), '"'),
-      seq("'", repeat(choice($.nunjucks_expression, /[^'\n\\]+/, /\\./)), "'")
-    ),
+    yaml_string: $ => choice(seq('"', repeat(choice($.nunjucks_expression, /[^"\n\\]+/, /\\./)), '"'), seq("'", repeat(choice($.nunjucks_expression, /[^'\n\\]+/, /\\./)), "'")),
     comment: $ => /#[^\n]*/,
   }
 });
