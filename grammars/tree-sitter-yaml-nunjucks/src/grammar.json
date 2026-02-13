@@ -317,8 +317,12 @@
           "name": "yaml_string"
         },
         {
-          "type": "SYMBOL",
-          "name": "yaml_mixed"
+          "type": "PREC",
+          "value": 1,
+          "content": {
+            "type": "SYMBOL",
+            "name": "yaml_mixed"
+          }
         },
         {
           "type": "SYMBOL",
@@ -330,7 +334,7 @@
         },
         {
           "type": "PATTERN",
-          "value": "[^\\s\\[\\]{},\"'#!]+"
+          "value": "[^\\s:\\[\\]{},\"'#!]+"
         }
       ]
     },
@@ -441,7 +445,7 @@
               },
               {
                 "type": "PATTERN",
-                "value": "[^\\s\\[\\]{},\"'#\\n]+"
+                "value": "[^\\s:\\[\\]{},\"'#\\n]+"
               }
             ]
           }
@@ -469,7 +473,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "[^\\s\\[\\]{},\"'#\\n]+"
+                    "value": "[^\\s:\\[\\]{},\"'#\\n]+"
                   }
                 ]
               }
@@ -481,10 +485,14 @@
           "members": [
             {
               "type": "PATTERN",
-              "value": "[^\\s\\[\\]{},\"'#\\n]+"
+              "value": "[^\\s:\\[\\]{},\"'#\\n]+"
             },
             {
-              "type": "REPEAT1",
+              "type": "SYMBOL",
+              "name": "nunjucks_expression"
+            },
+            {
+              "type": "REPEAT",
               "content": {
                 "type": "CHOICE",
                 "members": [
@@ -494,7 +502,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "[^\\s\\[\\]{},\"'#\\n]+"
+                    "value": "[^\\s:\\[\\]{},\"'#\\n]+"
                   }
                 ]
               }

@@ -51,10 +51,10 @@ module.exports = grammar({
 
     yaml_value: $ => choice(
       $.yaml_string,
-      $.yaml_mixed,
+      prec(1, $.yaml_mixed),
       $.nunjucks_expression,
       $.cf_intrinsic,
-      /[^\s\[\]{},"'#!]+/
+      /[^\s:\[\]{},"'#!]+/
     ),
 
     // CloudFormation and OrgFormation intrinsic functions
@@ -73,13 +73,15 @@ module.exports = grammar({
       choice(
         $.yaml_string,
         $.nunjucks_expression,
-        /[^\s\[\]{},"'#\n]+/
+        /[^\s:\[\]{},"'#\n]+/
       )
     )),
 
     yaml_mixed: $ => choice(
-      seq($.nunjucks_expression, repeat1(choice($.nunjucks_expression, /[^\s\[\]{},"'#\n]+/))),
-      seq(/[^\s\[\]{},"'#\n]+/, repeat1(choice($.nunjucks_expression, /[^\s\[\]{},"'#\n]+/)))
+      // Expression followed by text or more expressions
+      seq($.nunjucks_expression, repeat1(choice($.nunjucks_expression, /[^\s:\[\]{},"'#\n]+/))),
+      // Text followed by expression(s)
+      seq(/[^\s:\[\]{},"'#\n]+/, $.nunjucks_expression, repeat(choice($.nunjucks_expression, /[^\s:\[\]{},"'#\n]+/)))
     ),
 
     yaml_list_item: $ => seq('-', optional(seq(/[ \t]+/, choice($.yaml_pair, $.yaml_value)))),
