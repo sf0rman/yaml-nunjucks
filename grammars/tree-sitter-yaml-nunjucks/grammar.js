@@ -15,13 +15,13 @@ module.exports = grammar({
     nunjucks_statement: $ => seq(
       '{%',
       optional(/[ \t]+/),
-      optional($.nunjucks_keyword),
+      $.nunjucks_keyword,
       optional($._statement_rest),
       optional(/[ \t]+/),
       '%}'
     ),
 
-    nunjucks_keyword: $ => token(choice(
+    nunjucks_keyword: $ => choice(
       'if', 'elif', 'else', 'endif',
       'for', 'in', 'endfor',
       'set', 'block', 'endblock',
@@ -29,9 +29,14 @@ module.exports = grammar({
       'call', 'endcall',
       'filter', 'endfilter',
       'extends', 'include', 'import', 'from'
+    ),
+
+    _statement_rest: $ => repeat1(choice(
+      seq(/[ \t]+/, $.nunjucks_keyword),
+      seq(/[ \t]+/, $._statement_word)
     )),
 
-    _statement_rest: $ => /([^%]|%[^}])*/,
+    _statement_word: $ => token(prec(-1, /[a-zA-Z0-9_\.]+/)),
 
     // Nunjucks expressions - keep simple for now
     nunjucks_expression: $ => seq('{{', $._expr_content, '}}'),
