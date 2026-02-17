@@ -7,6 +7,6 @@ description = "YAML with embedded Nunjucks template syntax support for .njk file
 repository = "https://github.com/sforman/yaml-nunjucks"
 
 [grammars.yaml_nunjucks]
-repository = "file:///Users/sforman/sforman/yaml-nunjucks"
-rev = "ae8bbb8d8f298c749f2b75ec7cac0a621c6b7396"
+repository = "https://github.com/sf0rman/yaml-nunjucks.git"
+rev = "a35a9332089ae184dd91dcac7e90679a5e0ab429"
 path = "grammars/tree-sitter-yaml-nunjucks"
