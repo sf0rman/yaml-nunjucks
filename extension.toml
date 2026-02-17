@@ -4,7 +4,7 @@ version = "0.1.0"
 schema_version = 1
 authors = ["Sebastian Forman <sebastian@forman.no>"]
 description = "YAML with embedded Nunjucks template syntax support for .njk files"
-repository = "https://github.com/sforman/yaml-nunjucks"
+repository = "https://github.com/sf0rman/yaml-nunjucks"
 
 [grammars.yaml_nunjucks]
 repository = "https://github.com/sf0rman/yaml-nunjucks.git"
