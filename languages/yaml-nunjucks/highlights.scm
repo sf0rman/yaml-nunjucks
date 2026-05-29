@@ -1,58 +1,45 @@
-; ── Nunjucks ────────────────────────────────────────────────────────────────
+; ── Nunjucks ─────────────────────────────────────────────────────────────────
 
 (nunjucks_keyword) @keyword.control
-
-; Whole {{ expression }} node gets "variable" colour (inner content is unstructured)
 (nunjucks_expression) @variable
-
 (nunjucks_comment) @comment
-
-; ── CloudFormation / OrgFormation tags ───────────────────────────────────────
-
-(cf_tag) @type
 
 ; ── YAML Keys ────────────────────────────────────────────────────────────────
 
-(yaml_pair (yaml_key (yaml_plain_key) @property))
-(yaml_pair (yaml_key (yaml_quoted_string) @property))
-(yaml_pair (yaml_key (cf_tag) @type))
+(block_mapping_pair key: (flow_node (plain_scalar) @property))
+(block_mapping_pair key: (flow_node (double_quote_scalar) @property))
+(block_mapping_pair key: (flow_node (single_quote_scalar) @property))
+(flow_pair key: (flow_node (plain_scalar) @property))
+(flow_pair key: (flow_node (double_quote_scalar) @property))
+(flow_pair key: (flow_node (single_quote_scalar) @property))
 
-; ── Quoted strings ────────────────────────────────────────────────────────────
+; ── Scalars ───────────────────────────────────────────────────────────────────
 
-(yaml_quoted_string) @string
+(boolean_scalar) @boolean
+(null_scalar) @constant.builtin
+(integer_scalar) @number
+(float_scalar) @number
 
-; ── Plain scalar values ───────────────────────────────────────────────────────
+(double_quote_scalar) @string
+(single_quote_scalar) @string
+(string_scalar) @string
+(block_scalar) @string
 
-; Booleans
-((yaml_plain_scalar) @boolean
-  (#match? @boolean "^(true|false|True|False|TRUE|FALSE|yes|no|Yes|No|YES|NO|on|off|On|Off|ON|OFF)$"))
+(plain_scalar) @string
 
-; Numbers (integer or float)
-((yaml_plain_scalar) @number
-  (#match? @number "^[+-]?[0-9]+([.][0-9]+)?([eE][+-]?[0-9]+)?$"))
+; ── Tags (CloudFormation / OrgFormation intrinsics) ───────────────────────────
 
-; Null
-((yaml_plain_scalar) @constant.builtin
-  (#match? @constant.builtin "^(null|Null|NULL|~)$"))
+(tag) @type
 
-; Plain scalars in value position (AWS::Type, ARNs, paths, etc.)
-(yaml_plain_scalar) @string
+; ── Anchors and aliases ───────────────────────────────────────────────────────
 
-; Flow sequence items (named node so we can target them)
-(yaml_flow_scalar) @string
+(anchor) @type.definition
+(alias) @type
 
 ; ── Block structure ───────────────────────────────────────────────────────────
 
-; Block scalar indicators (| and >) — treat like punctuation
-(yaml_block_scalar) @punctuation.special
-
-; YAML list dash
-(yaml_list_item "-" @punctuation.special)
-
-; ── Flow mapping keys ─────────────────────────────────────────────────────────
-
-(yaml_flow_pair (yaml_flow_key) @property)
+(block_sequence_item "-" @punctuation.special)
 
 ; ── Comments ─────────────────────────────────────────────────────────────────
 
-(comment) @comment.line
+(comment) @comment
