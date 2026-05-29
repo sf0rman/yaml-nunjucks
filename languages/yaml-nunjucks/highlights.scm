@@ -41,9 +41,6 @@
 ; Flow sequence items (named node so we can target them)
 (yaml_flow_scalar) @string
 
-; Mixed content: surrounding text around {{ expressions }}
-(yaml_mixed) @string
-
 ; ── Block structure ───────────────────────────────────────────────────────────
 
 ; Block scalar indicators (| and >) — treat like punctuation
