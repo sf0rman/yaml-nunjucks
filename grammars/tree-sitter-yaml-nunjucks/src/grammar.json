@@ -1,5 +1,4 @@
 {
-  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/grammar.schema.json",
   "name": "yaml_nunjucks",
   "rules": {
     "document": {
@@ -190,6 +189,14 @@
         },
         {
           "type": "STRING",
+          "value": "raw"
+        },
+        {
+          "type": "STRING",
+          "value": "endraw"
+        },
+        {
+          "type": "STRING",
           "value": "extends"
         },
         {
@@ -203,6 +210,34 @@
         {
           "type": "STRING",
           "value": "from"
+        },
+        {
+          "type": "STRING",
+          "value": "with"
+        },
+        {
+          "type": "STRING",
+          "value": "without"
+        },
+        {
+          "type": "STRING",
+          "value": "context"
+        },
+        {
+          "type": "STRING",
+          "value": "not"
+        },
+        {
+          "type": "STRING",
+          "value": "and"
+        },
+        {
+          "type": "STRING",
+          "value": "or"
+        },
+        {
+          "type": "STRING",
+          "value": "is"
         }
       ]
     },
@@ -247,7 +282,7 @@
         "value": -1,
         "content": {
           "type": "PATTERN",
-          "value": "[a-zA-Z0-9_\\.]+"
+          "value": "[a-zA-Z0-9_.|+\\-*\\/=!<>()'\",]+"
         }
       }
     },
@@ -328,48 +363,44 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "yaml_string"
+          "name": "yaml_quoted_string"
         },
         {
           "type": "SYMBOL",
           "name": "cf_tag"
         },
         {
-          "type": "PATTERN",
-          "value": "[^\\s:\\[\\]{},\"'#!]+"
+          "type": "SYMBOL",
+          "name": "yaml_plain_key"
         }
       ]
+    },
+    "yaml_plain_key": {
+      "type": "PATTERN",
+      "value": "[^ \\t\\n:\\[\\]{},\"'#!][^ \\t\\n:\\[\\]{},\"'#!]*"
     },
     "yaml_value": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "yaml_string"
+          "name": "yaml_quoted_string"
         },
         {
-          "type": "PREC_DYNAMIC",
-          "value": 2,
-          "content": {
-            "type": "SYMBOL",
-            "name": "yaml_boolean"
-          }
+          "type": "SYMBOL",
+          "name": "yaml_block_scalar"
         },
         {
-          "type": "PREC_DYNAMIC",
-          "value": 2,
-          "content": {
-            "type": "SYMBOL",
-            "name": "yaml_number"
-          }
+          "type": "SYMBOL",
+          "name": "yaml_flow_sequence"
         },
         {
-          "type": "PREC",
-          "value": 1,
-          "content": {
-            "type": "SYMBOL",
-            "name": "yaml_mixed"
-          }
+          "type": "SYMBOL",
+          "name": "yaml_flow_mapping"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "cf_intrinsic"
         },
         {
           "type": "SYMBOL",
@@ -377,114 +408,243 @@
         },
         {
           "type": "SYMBOL",
-          "name": "cf_intrinsic"
+          "name": "yaml_mixed"
         },
         {
-          "type": "PREC_DYNAMIC",
-          "value": 0,
-          "content": {
-            "type": "SYMBOL",
-            "name": "yaml_plain_scalar"
-          }
+          "type": "SYMBOL",
+          "name": "yaml_plain_scalar"
         }
       ]
     },
-    "yaml_boolean": {
-      "type": "CHOICE",
+    "yaml_block_scalar": {
+      "type": "PATTERN",
+      "value": "[|>][-+]?[0-9]*"
+    },
+    "yaml_plain_scalar": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": -1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[^ \\t\\n\\[\\]{},\"'#!|>][^ \\t\\n\\[\\]{},\"']*"
+        }
+      }
+    },
+    "yaml_flow_sequence": {
+      "type": "SEQ",
       "members": [
         {
           "type": "STRING",
-          "value": "true"
+          "value": "["
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "[ \\t]*"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_flow_item"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "PATTERN",
+                        "value": "[ \\t]*,[ \\t]*"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "_flow_item"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "PATTERN",
+                      "value": "[ \\t]*"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "STRING",
-          "value": "false"
-        },
-        {
-          "type": "STRING",
-          "value": "True"
-        },
-        {
-          "type": "STRING",
-          "value": "False"
-        },
-        {
-          "type": "STRING",
-          "value": "TRUE"
-        },
-        {
-          "type": "STRING",
-          "value": "FALSE"
-        },
-        {
-          "type": "STRING",
-          "value": "yes"
-        },
-        {
-          "type": "STRING",
-          "value": "no"
-        },
-        {
-          "type": "STRING",
-          "value": "Yes"
-        },
-        {
-          "type": "STRING",
-          "value": "No"
-        },
-        {
-          "type": "STRING",
-          "value": "YES"
-        },
-        {
-          "type": "STRING",
-          "value": "NO"
-        },
-        {
-          "type": "STRING",
-          "value": "on"
-        },
-        {
-          "type": "STRING",
-          "value": "off"
-        },
-        {
-          "type": "STRING",
-          "value": "On"
-        },
-        {
-          "type": "STRING",
-          "value": "Off"
-        },
-        {
-          "type": "STRING",
-          "value": "ON"
-        },
-        {
-          "type": "STRING",
-          "value": "OFF"
+          "value": "]"
         }
       ]
     },
-    "yaml_number": {
-      "type": "TOKEN",
+    "yaml_flow_scalar": {
+      "type": "PATTERN",
+      "value": "[^ \\t\\n,\\[\\]{}'\"!][^ \\t\\n,\\[\\]{}'\"]*"
+    },
+    "_flow_item": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "yaml_quoted_string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "yaml_flow_sequence"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "yaml_flow_mapping"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "cf_intrinsic"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "nunjucks_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "yaml_flow_scalar"
+        }
+      ]
+    },
+    "yaml_flow_mapping": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "[ \\t]*"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "yaml_flow_pair"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "PATTERN",
+                        "value": "[ \\t]*,[ \\t]*"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "yaml_flow_pair"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "PATTERN",
+                      "value": "[ \\t]*"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "yaml_flow_pair": {
+      "type": "PREC_RIGHT",
+      "value": 0,
       "content": {
-        "type": "CHOICE",
+        "type": "SEQ",
         "members": [
           {
-            "type": "PATTERN",
-            "value": "[0-9]+\\.[0-9]+"
+            "type": "SYMBOL",
+            "name": "yaml_flow_key"
           },
           {
-            "type": "PATTERN",
-            "value": "[0-9]+"
+            "type": "STRING",
+            "value": ":"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[ \\t]*"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_flow_item"
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           }
         ]
       }
     },
-    "yaml_plain_scalar": {
+    "yaml_flow_key": {
       "type": "PATTERN",
-      "value": "[^\\s:\\[\\]{},\"'#!]+|[A-Za-z_][A-Za-z0-9_]*:[A-Za-z0-9_:]+"
+      "value": "[^ \\t\\n:\\[\\]{},\"'!][^ \\t\\n:\\[\\]{},\"']*"
     },
     "cf_tag": {
       "type": "TOKEN",
@@ -553,6 +713,10 @@
           },
           {
             "type": "STRING",
+            "value": "!Condition"
+          },
+          {
+            "type": "STRING",
             "value": "!GetOrganizationBinding"
           },
           {
@@ -581,83 +745,95 @@
             "value": "[ \\t]+"
           },
           {
-            "type": "CHOICE",
+            "type": "SYMBOL",
+            "name": "_cf_value"
+          }
+        ]
+      }
+    },
+    "_cf_value": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "yaml_quoted_string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "yaml_flow_sequence"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "nunjucks_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "yaml_plain_scalar"
+        }
+      ]
+    },
+    "yaml_mixed": {
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SEQ",
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "yaml_string"
+                "name": "nunjucks_expression"
+              },
+              {
+                "type": "REPEAT1",
+                "content": {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "nunjucks_expression"
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "[^ \\t\\n\\[\\]{},\"']+"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "[^ \\t\\n\\[\\]{},\"']+"
               },
               {
                 "type": "SYMBOL",
                 "name": "nunjucks_expression"
               },
               {
-                "type": "PATTERN",
-                "value": "[^\\s:\\[\\]{},\"'#\\n]+"
+                "type": "REPEAT",
+                "content": {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "nunjucks_expression"
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "[^ \\t\\n\\[\\]{},\"']+"
+                    }
+                  ]
+                }
               }
             ]
           }
         ]
       }
-    },
-    "yaml_mixed": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "nunjucks_expression"
-            },
-            {
-              "type": "REPEAT1",
-              "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "nunjucks_expression"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "[^\\s:\\[\\]{},\"'#\\n]+"
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "PATTERN",
-              "value": "[^\\s:\\[\\]{},\"'#\\n]+"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "nunjucks_expression"
-            },
-            {
-              "type": "REPEAT",
-              "content": {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "nunjucks_expression"
-                  },
-                  {
-                    "type": "PATTERN",
-                    "value": "[^\\s:\\[\\]{},\"'#\\n]+"
-                  }
-                ]
-              }
-            }
-          ]
-        }
-      ]
     },
     "yaml_list_item": {
       "type": "SEQ",
@@ -698,7 +874,7 @@
         }
       ]
     },
-    "yaml_string": {
+    "yaml_quoted_string": {
       "type": "CHOICE",
       "members": [
         {
@@ -719,7 +895,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "[^\"\\n\\\\]+"
+                    "value": "[^\"\\\\\\n]+"
                   },
                   {
                     "type": "PATTERN",
@@ -752,7 +928,7 @@
                   },
                   {
                     "type": "PATTERN",
-                    "value": "[^'\\n\\\\]+"
+                    "value": "[^'\\\\\\n]+"
                   },
                   {
                     "type": "PATTERN",
@@ -779,6 +955,6 @@
   "precedences": [],
   "externals": [],
   "inline": [],
-  "supertypes": [],
-  "reserved": {}
+  "supertypes": []
 }
+

@@ -1,45 +1,61 @@
-; YAML + Nunjucks + CloudFormation highlighting
+; ── Nunjucks ────────────────────────────────────────────────────────────────
 
-; === Nunjucks ===
-; Keywords (if, for, set, etc.)
 (nunjucks_keyword) @keyword.control
 
-; Expression delimiters and content
+; Whole {{ expression }} node gets "variable" colour (inner content is unstructured)
 (nunjucks_expression) @variable
 
-; Comments
 (nunjucks_comment) @comment
 
-; === CloudFormation ===
-; Intrinsic function tags (!Ref, !Sub, etc.) - green like YAML tags
+; ── CloudFormation / OrgFormation tags ───────────────────────────────────────
+
 (cf_tag) @type
 
-; Complete intrinsic function calls
-(cf_intrinsic (cf_tag) @type)
+; ── YAML Keys ────────────────────────────────────────────────────────────────
 
-; === YAML Structure ===
-; Keys in key-value pairs
-(yaml_pair (yaml_key) @property)
+(yaml_pair (yaml_key (yaml_plain_key) @property))
+(yaml_pair (yaml_key (yaml_quoted_string) @property))
+(yaml_pair (yaml_key (cf_tag) @type))
 
-; Quoted strings
-(yaml_string) @string
+; ── Quoted strings ────────────────────────────────────────────────────────────
+
+(yaml_quoted_string) @string
+
+; ── Plain scalar values ───────────────────────────────────────────────────────
 
 ; Booleans
-(yaml_boolean) @boolean
 ((yaml_plain_scalar) @boolean
   (#match? @boolean "^(true|false|True|False|TRUE|FALSE|yes|no|Yes|No|YES|NO|on|off|On|Off|ON|OFF)$"))
 
-; Numbers
-(yaml_number) @number
+; Numbers (integer or float)
 ((yaml_plain_scalar) @number
-  (#match? @number "^[0-9]+(\\.[0-9]+)?$"))
+  (#match? @number "^[+-]?[0-9]+([.][0-9]+)?([eE][+-]?[0-9]+)?$"))
 
-; Plain scalar values - treat as strings (AWS::*, sts:*, etc.)
-((yaml_plain_scalar) @string)
-(yaml_value) @string
+; Null
+((yaml_plain_scalar) @constant.builtin
+  (#match? @constant.builtin "^(null|Null|NULL|~)$"))
 
-; Mixed content (text + templates)
+; Plain scalars in value position (AWS::Type, ARNs, paths, etc.)
+(yaml_plain_scalar) @string
+
+; Flow sequence items (named node so we can target them)
+(yaml_flow_scalar) @string
+
+; Mixed content: surrounding text around {{ expressions }}
 (yaml_mixed) @string
 
-; YAML comments
+; ── Block structure ───────────────────────────────────────────────────────────
+
+; Block scalar indicators (| and >) — treat like punctuation
+(yaml_block_scalar) @punctuation.special
+
+; YAML list dash
+(yaml_list_item "-" @punctuation.special)
+
+; ── Flow mapping keys ─────────────────────────────────────────────────────────
+
+(yaml_flow_pair (yaml_flow_key) @property)
+
+; ── Comments ─────────────────────────────────────────────────────────────────
+
 (comment) @comment.line
