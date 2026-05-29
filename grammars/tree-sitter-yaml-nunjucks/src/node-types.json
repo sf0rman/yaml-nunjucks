@@ -85,7 +85,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
         {
@@ -227,21 +227,6 @@
     }
   },
   {
-    "type": "yaml_mixed",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "nunjucks_expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "yaml_pair",
     "named": true,
     "fields": {},
@@ -255,6 +240,21 @@
         },
         {
           "type": "yaml_value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "yaml_plain_scalar",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "nunjucks_expression",
           "named": true
         }
       ]
@@ -288,10 +288,6 @@
           "named": true
         },
         {
-          "type": "nunjucks_expression",
-          "named": true
-        },
-        {
           "type": "yaml_block_scalar",
           "named": true
         },
@@ -301,10 +297,6 @@
         },
         {
           "type": "yaml_flow_sequence",
-          "named": true
-        },
-        {
-          "type": "yaml_mixed",
           "named": true
         },
         {
@@ -488,10 +480,6 @@
   },
   {
     "type": "yaml_plain_key",
-    "named": true
-  },
-  {
-    "type": "yaml_plain_scalar",
     "named": true
   },
   {

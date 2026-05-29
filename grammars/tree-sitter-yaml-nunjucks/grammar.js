@@ -20,17 +20,18 @@ module.exports = grammar({
       $.blank_line
     ),
 
-    blank_line: $ => /[ \t]*\r?\n/,
+    // High-precedence token so it never forks against the leading-whitespace in _line
+    blank_line: $ => token(prec(2, /[ \t]*\r?\n/)),
 
     // ── Nunjucks ──────────────────────────────────────────────────────────────
 
     nunjucks_statement: $ => seq(
-      '{%',
+      token(prec(2, '{%')),
       optional(/[ \t]+/),
       $.nunjucks_keyword,
       optional($._statement_rest),
       optional(/[ \t]+/),
-      '%}'
+      token(prec(2, '%}'))
     ),
 
     nunjucks_keyword: $ => choice(
@@ -46,17 +47,28 @@ module.exports = grammar({
       'not', 'and', 'or', 'is',
     ),
 
+    // Only plain words in the body — keywords are only meaningful at the front
+    // of a statement, so no need to fork keyword-vs-word for each token here.
     _statement_rest: $ => repeat1(seq(
       /[ \t]+/,
-      choice($.nunjucks_keyword, $._statement_word)
+      $._statement_word
     )),
 
-    _statement_word: $ => token(prec(-1, /[a-zA-Z0-9_.|+\-*\/=!<>()'",]+/)),
+    _statement_word: $ => token(/[a-zA-Z0-9_.|+\-*\/=!<>()'",]+/),
 
-    nunjucks_expression: $ => seq('{{', $._expr_content, '}}'),
+    // {{…}} as single high-prec tokens so lexer never forks against bare {
+    nunjucks_expression: $ => seq(
+      token(prec(2, '{{')),
+      $._expr_content,
+      token(prec(2, '}}'))
+    ),
     _expr_content: $ => /([^}]|}[^}])+/,
 
-    nunjucks_comment: $ => seq('{#', /([^#]|#[^}])*#*/, '}'),
+    nunjucks_comment: $ => seq(
+      token(prec(2, '{#')),
+      /([^#]|#[^}])*#*/,
+      '}'
+    ),
 
     // ── YAML ──────────────────────────────────────────────────────────────────
 
@@ -66,14 +78,12 @@ module.exports = grammar({
       optional(seq(/[ \t]+/, $.yaml_value))
     ),
 
-    // Named choice so each key type can be queried independently
     yaml_key: $ => choice(
       $.yaml_quoted_string,
       $.cf_tag,
       $.yaml_plain_key
     ),
 
-    // Stops at ':' and YAML structural chars — no colon allowed (key ends before ': ')
     yaml_plain_key: $ => /[^ \t\n:\[\]{},"'#!][^ \t\n:\[\]{},"'#!]*/,
 
     yaml_value: $ => choice(
@@ -82,24 +92,24 @@ module.exports = grammar({
       $.yaml_flow_sequence,
       $.yaml_flow_mapping,
       $.cf_intrinsic,
-      $.nunjucks_expression,
-      $.yaml_mixed,
       $.yaml_plain_scalar
     ),
 
-    // Block scalar indicators: | or > with optional chomping/indent modifiers
     yaml_block_scalar: $ => /[|>][-+]?[0-9]*/,
 
-    // Plain unquoted scalar value.
-    // Allows colons for AWS::Type, sts:Action, ARNs, index.handler, etc.
-    // Excludes | and > as first char so yaml_block_scalar takes precedence.
-    yaml_plain_scalar: $ => token(prec(-1,
-      /[^ \t\n\[\]{},"'#!|>][^ \t\n\[\]{},"']*/
+    // Single unified rule for plain scalars, with or without embedded {{ }}.
+    // Collapsing the old yaml_plain_scalar + yaml_mixed into one rule eliminates
+    // the forking dual-stack that caused O(2^n) GLR speculation on every value.
+    yaml_plain_scalar: $ => prec.right(seq(
+      token(prec(-1, /[^ \t\n\[\]{},"'#!|>][^ \t\n\[\]{},"']*/)),
+      repeat(choice(
+        $.nunjucks_expression,
+        token(/[^ \t\n\[\]{},"']+/)
+      ))
     )),
 
     // ── Flow collections ──────────────────────────────────────────────────────
 
-    // Inline sequence: [item, item, ...]
     yaml_flow_sequence: $ => seq(
       '[',
       optional(/[ \t]*/),
@@ -111,7 +121,6 @@ module.exports = grammar({
       ']'
     ),
 
-    // Named rule so flow scalars can be highlighted like yaml_plain_scalar
     yaml_flow_scalar: $ => /[^ \t\n,\[\]{}'"!][^ \t\n,\[\]{}'"]*/,
 
     _flow_item: $ => choice(
@@ -123,7 +132,6 @@ module.exports = grammar({
       $.yaml_flow_scalar
     ),
 
-    // Inline mapping: {key: value, ...}
     yaml_flow_mapping: $ => seq(
       '{',
       optional(/[ \t]*/),
@@ -165,20 +173,14 @@ module.exports = grammar({
       $.yaml_plain_scalar
     ),
 
-    // ── Mixed content ─────────────────────────────────────────────────────────
+    // ── Strings ───────────────────────────────────────────────────────────────
 
-    // Plain text interleaved with {{ expressions }}, e.g. prefix_{{ var }}_suffix
-    yaml_mixed: $ => prec(1, choice(
-      seq(
-        $.nunjucks_expression,
-        repeat1(choice($.nunjucks_expression, /[^ \t\n\[\]{},"']+/))
-      ),
-      seq(
-        /[^ \t\n\[\]{},"']+/,
-        $.nunjucks_expression,
-        repeat(choice($.nunjucks_expression, /[^ \t\n\[\]{},"']+/))
-      )
-    )),
+    // {/\{/ as a single-char fallback after {[^{] so {{ is always claimed by
+    // nunjucks_expression (token prec 2) and never left to the text chunk.
+    yaml_quoted_string: $ => choice(
+      seq('"', repeat(choice($.nunjucks_expression, /[^"\\\n{]+/, /\{/, /\\./)), '"'),
+      seq("'", repeat(choice($.nunjucks_expression, /[^'\\\n{]+/, /\{/, /\\./)), "'")
+    ),
 
     // ── Block sequence ────────────────────────────────────────────────────────
 
@@ -188,14 +190,6 @@ module.exports = grammar({
         /[ \t]+/,
         choice($.yaml_pair, $.yaml_value)
       ))
-    ),
-
-    // ── Strings ───────────────────────────────────────────────────────────────
-
-    // Quoted strings can contain embedded Nunjucks expressions
-    yaml_quoted_string: $ => choice(
-      seq('"', repeat(choice($.nunjucks_expression, /[^"\\\n]+/, /\\./)), '"'),
-      seq("'", repeat(choice($.nunjucks_expression, /[^'\\\n]+/, /\\./)), "'")
     ),
 
     comment: $ => /#[^\n]*/,
