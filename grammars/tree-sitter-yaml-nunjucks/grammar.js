@@ -46,9 +46,9 @@ module.exports = grammar({
       'not', 'and', 'or', 'is',
     ),
 
-    _statement_rest: $ => repeat1(choice(
-      seq(/[ \t]+/, $.nunjucks_keyword),
-      seq(/[ \t]+/, $._statement_word)
+    _statement_rest: $ => repeat1(seq(
+      /[ \t]+/,
+      choice($.nunjucks_keyword, $._statement_word)
     )),
 
     _statement_word: $ => token(prec(-1, /[a-zA-Z0-9_.|+\-*\/=!<>()'",]+/)),

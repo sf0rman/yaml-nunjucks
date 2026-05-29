@@ -244,27 +244,18 @@
     "_statement_rest": {
       "type": "REPEAT1",
       "content": {
-        "type": "CHOICE",
+        "type": "SEQ",
         "members": [
           {
-            "type": "SEQ",
+            "type": "PATTERN",
+            "value": "[ \\t]+"
+          },
+          {
+            "type": "CHOICE",
             "members": [
-              {
-                "type": "PATTERN",
-                "value": "[ \\t]+"
-              },
               {
                 "type": "SYMBOL",
                 "name": "nunjucks_keyword"
-              }
-            ]
-          },
-          {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "PATTERN",
-                "value": "[ \\t]+"
               },
               {
                 "type": "SYMBOL",
