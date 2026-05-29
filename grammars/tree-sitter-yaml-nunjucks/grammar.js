@@ -92,6 +92,7 @@ module.exports = grammar({
       $.yaml_flow_sequence,
       $.yaml_flow_mapping,
       $.cf_intrinsic,
+      $.nunjucks_expression,
       $.yaml_plain_scalar
     ),
 

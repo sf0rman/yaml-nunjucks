@@ -424,6 +424,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "nunjucks_expression"
+        },
+        {
+          "type": "SYMBOL",
           "name": "yaml_plain_scalar"
         }
       ]

@@ -288,6 +288,10 @@
           "named": true
         },
         {
+          "type": "nunjucks_expression",
+          "named": true
+        },
+        {
           "type": "yaml_block_scalar",
           "named": true
         },
