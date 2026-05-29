@@ -1,6 +1,6 @@
 id = "yaml-nunjucks"
 name = "YAML Nunjucks"
-version = "0.1.2"
+version = "0.1.3"
 schema_version = 1
 authors = ["Sebastian Forman <sebastian@forman.no>"]
 description = "YAML with embedded Nunjucks template syntax support for .njk files"
@@ -8,5 +8,5 @@ repository = "https://github.com/sf0rman/yaml-nunjucks"
 
 [grammars.yaml_nunjucks]
 repository = "https://github.com/sf0rman/yaml-nunjucks.git"
-rev = "3750dc1de4c1b36214b473ffc556a7825baeea35"
+rev = "5197453fb9108f7f395664e09a5f298fe7d31c5b"
 path = "grammars/tree-sitter-yaml-nunjucks"
