@@ -1,5 +1,57 @@
 [
   {
+    "type": "\"",
+    "named": false
+  },
+  {
+    "type": "&",
+    "named": false
+  },
+  {
+    "type": "'",
+    "named": false
+  },
+  {
+    "type": "*",
+    "named": false
+  },
+  {
+    "type": ",",
+    "named": false
+  },
+  {
+    "type": "-",
+    "named": false
+  },
+  {
+    "type": "---",
+    "named": false
+  },
+  {
+    "type": "...",
+    "named": false
+  },
+  {
+    "type": ":",
+    "named": false
+  },
+  {
+    "type": ">",
+    "named": false
+  },
+  {
+    "type": "?",
+    "named": false
+  },
+  {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
     "type": "alias",
     "named": true,
     "fields": {},
@@ -15,6 +67,10 @@
     }
   },
   {
+    "type": "alias_name",
+    "named": true
+  },
+  {
     "type": "anchor",
     "named": true,
     "fields": {},
@@ -28,6 +84,10 @@
         }
       ]
     }
+  },
+  {
+    "type": "anchor_name",
+    "named": true
   },
   {
     "type": "block_mapping",
@@ -149,6 +209,23 @@
     }
   },
   {
+    "type": "boolean_scalar",
+    "named": true
+  },
+  {
+    "type": "comment",
+    "named": true,
+    "extra": true
+  },
+  {
+    "type": "directive_name",
+    "named": true
+  },
+  {
+    "type": "directive_parameter",
+    "named": true
+  },
+  {
     "type": "document",
     "named": true,
     "fields": {},
@@ -193,6 +270,14 @@
         }
       ]
     }
+  },
+  {
+    "type": "escape_sequence",
+    "named": true
+  },
+  {
+    "type": "float_scalar",
+    "named": true
   },
   {
     "type": "flow_mapping",
@@ -302,6 +387,14 @@
     }
   },
   {
+    "type": "integer_scalar",
+    "named": true
+  },
+  {
+    "type": "null_scalar",
+    "named": true
+  },
+  {
     "type": "nunjucks_comment",
     "named": true,
     "fields": {}
@@ -401,6 +494,30 @@
     }
   },
   {
+    "type": "stream",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "document",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string_scalar",
+    "named": true
+  },
+  {
+    "type": "tag",
+    "named": true
+  },
+  {
     "type": "tag_directive",
     "named": true,
     "fields": {},
@@ -420,6 +537,18 @@
     }
   },
   {
+    "type": "tag_handle",
+    "named": true
+  },
+  {
+    "type": "tag_prefix",
+    "named": true
+  },
+  {
+    "type": "timestamp_scalar",
+    "named": true
+  },
+  {
     "type": "yaml_directive",
     "named": true,
     "fields": {},
@@ -435,242 +564,6 @@
     }
   },
   {
-    "type": "\"",
-    "named": false
-  },
-  {
-    "type": "#}",
-    "named": false
-  },
-  {
-    "type": "%}",
-    "named": false
-  },
-  {
-    "type": "&",
-    "named": false
-  },
-  {
-    "type": "'",
-    "named": false
-  },
-  {
-    "type": "*",
-    "named": false
-  },
-  {
-    "type": ",",
-    "named": false
-  },
-  {
-    "type": "-",
-    "named": false
-  },
-  {
-    "type": "---",
-    "named": false
-  },
-  {
-    "type": "...",
-    "named": false
-  },
-  {
-    "type": ":",
-    "named": false
-  },
-  {
-    "type": ">",
-    "named": false
-  },
-  {
-    "type": "?",
-    "named": false
-  },
-  {
-    "type": "[",
-    "named": false
-  },
-  {
-    "type": "]",
-    "named": false
-  },
-  {
-    "type": "alias_name",
-    "named": true
-  },
-  {
-    "type": "anchor_name",
-    "named": true
-  },
-  {
-    "type": "and",
-    "named": false
-  },
-  {
-    "type": "block",
-    "named": false
-  },
-  {
-    "type": "boolean_scalar",
-    "named": true
-  },
-  {
-    "type": "call",
-    "named": false
-  },
-  {
-    "type": "comment",
-    "named": true
-  },
-  {
-    "type": "context",
-    "named": false
-  },
-  {
-    "type": "directive_name",
-    "named": true
-  },
-  {
-    "type": "directive_parameter",
-    "named": true
-  },
-  {
-    "type": "elif",
-    "named": false
-  },
-  {
-    "type": "else",
-    "named": false
-  },
-  {
-    "type": "endblock",
-    "named": false
-  },
-  {
-    "type": "endcall",
-    "named": false
-  },
-  {
-    "type": "endfilter",
-    "named": false
-  },
-  {
-    "type": "endfor",
-    "named": false
-  },
-  {
-    "type": "endif",
-    "named": false
-  },
-  {
-    "type": "endmacro",
-    "named": false
-  },
-  {
-    "type": "endraw",
-    "named": false
-  },
-  {
-    "type": "escape_sequence",
-    "named": true
-  },
-  {
-    "type": "extends",
-    "named": false
-  },
-  {
-    "type": "filter",
-    "named": false
-  },
-  {
-    "type": "float_scalar",
-    "named": true
-  },
-  {
-    "type": "for",
-    "named": false
-  },
-  {
-    "type": "from",
-    "named": false
-  },
-  {
-    "type": "if",
-    "named": false
-  },
-  {
-    "type": "import",
-    "named": false
-  },
-  {
-    "type": "in",
-    "named": false
-  },
-  {
-    "type": "include",
-    "named": false
-  },
-  {
-    "type": "integer_scalar",
-    "named": true
-  },
-  {
-    "type": "is",
-    "named": false
-  },
-  {
-    "type": "macro",
-    "named": false
-  },
-  {
-    "type": "not",
-    "named": false
-  },
-  {
-    "type": "null_scalar",
-    "named": true
-  },
-  {
-    "type": "or",
-    "named": false
-  },
-  {
-    "type": "raw",
-    "named": false
-  },
-  {
-    "type": "set",
-    "named": false
-  },
-  {
-    "type": "string_scalar",
-    "named": true
-  },
-  {
-    "type": "tag",
-    "named": true
-  },
-  {
-    "type": "tag_handle",
-    "named": true
-  },
-  {
-    "type": "tag_prefix",
-    "named": true
-  },
-  {
-    "type": "timestamp_scalar",
-    "named": true
-  },
-  {
-    "type": "with",
-    "named": false
-  },
-  {
-    "type": "without",
-    "named": false
-  },
-  {
     "type": "yaml_version",
     "named": true
   },
@@ -679,27 +572,11 @@
     "named": false
   },
   {
-    "type": "{#",
-    "named": false
-  },
-  {
-    "type": "{%",
-    "named": false
-  },
-  {
-    "type": "{{",
-    "named": false
-  },
-  {
     "type": "|",
     "named": false
   },
   {
     "type": "}",
-    "named": false
-  },
-  {
-    "type": "}}",
     "named": false
   }
 ]
