@@ -1,26 +1,11 @@
-# Go
-lsp/yaml-nunjucks-lsp
-lsp/yaml-nunjucks-lsp-*
-
-# Rust build artifacts
-target
-Cargo.lock
-
-# Zed extension/grammar build artifacts (created during extension build)
-/grammars/yaml_nunjucks/
-/grammars/*.wasm
+# Zed extension build output (created during dev install / zed build)
 /extension.wasm
+/grammars/
 
-# IDE
+# IDE / OS
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
-
-# OS
 .DS_Store
 Thumbs.db
-
-# Logs
 *.log
