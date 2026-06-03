@@ -1,45 +1,85 @@
-; ── Nunjucks ─────────────────────────────────────────────────────────────────
-
-(nunjucks_keyword) @keyword.control
-(nunjucks_expression) @variable
-(nunjucks_comment) @comment
-
-; ── YAML Keys ────────────────────────────────────────────────────────────────
-
-(block_mapping_pair key: (flow_node (plain_scalar) @property))
-(block_mapping_pair key: (flow_node (double_quote_scalar) @property))
-(block_mapping_pair key: (flow_node (single_quote_scalar) @property))
-(flow_pair key: (flow_node (plain_scalar) @property))
-(flow_pair key: (flow_node (double_quote_scalar) @property))
-(flow_pair key: (flow_node (single_quote_scalar) @property))
-
-; ── Scalars ───────────────────────────────────────────────────────────────────
-
 (boolean_scalar) @boolean
+
 (null_scalar) @constant.builtin
-(integer_scalar) @number
-(float_scalar) @number
 
-(double_quote_scalar) @string
-(single_quote_scalar) @string
-(string_scalar) @string
-(block_scalar) @string
+[
+  (double_quote_scalar)
+  (single_quote_scalar)
+  (block_scalar)
+  (string_scalar)
+] @string
 
-(plain_scalar) @string
+[
+  (integer_scalar)
+  (float_scalar)
+] @number
 
-; ── Tags (CloudFormation / OrgFormation intrinsics) ───────────────────────────
+(comment) @comment
+
+[
+  (anchor_name)
+  (alias_name)
+] @label
 
 (tag) @type
 
-; ── Anchors and aliases ───────────────────────────────────────────────────────
+[
+  (yaml_directive)
+  (tag_directive)
+  (reserved_directive)
+] @attribute
 
-(anchor) @type.definition
-(alias) @type
+(block_mapping_pair
+  key: (flow_node
+    [
+      (double_quote_scalar)
+      (single_quote_scalar)
+    ] @property))
 
-; ── Block structure ───────────────────────────────────────────────────────────
+(block_mapping_pair
+  key: (flow_node
+    (plain_scalar
+      (string_scalar) @property)))
 
-(block_sequence_item "-" @punctuation.special)
+(flow_mapping
+  (_
+    key: (flow_node
+      [
+        (double_quote_scalar)
+        (single_quote_scalar)
+      ] @property)))
 
-; ── Comments ─────────────────────────────────────────────────────────────────
+(flow_mapping
+  (_
+    key: (flow_node
+      (plain_scalar
+        (string_scalar) @property))))
 
-(comment) @comment
+[
+  ","
+  "-"
+  ":"
+  ">"
+  "?"
+  "|"
+] @punctuation.delimiter
+
+[
+  "["
+  "]"
+  "{"
+  "}"
+] @punctuation.bracket
+
+[
+  "*"
+  "&"
+  "---"
+  "..."
+] @punctuation.special
+
+; Nunjucks template syntax
+(nunjucks_interpolation) @embedded
+(nunjucks_statement) @keyword
+(nunjucks_comment) @comment
+(nunjucks_expression) @embedded
