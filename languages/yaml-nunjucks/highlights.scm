@@ -79,7 +79,10 @@
 ] @punctuation.special
 
 ; Nunjucks template syntax
-(nunjucks_interpolation) @embedded
-(nunjucks_statement) @keyword
-(nunjucks_comment) @comment
+; Delimiters {{ }} and {% %} inherit @punctuation.special from their parent node.
+; Child nodes override with their own captures.
+(nunjucks_interpolation) @punctuation.special
+(nunjucks_statement) @punctuation.special
+(nunjucks_keyword) @keyword
 (nunjucks_expression) @embedded
+(nunjucks_comment) @comment
