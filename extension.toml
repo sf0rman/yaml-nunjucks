@@ -8,4 +8,4 @@ repository = "https://github.com/sf0rman/yaml-nunjucks"
 
 [grammars.yaml_nunjucks]
 repository = "https://github.com/sf0rman/tree-sitter-yaml-nunjucks"
-rev = "1773dea3a915c5e4e355621205d914d61d208fd7"
+rev = "fb59006c0d34c0f81ef10031c2957a8a03fe6101"
